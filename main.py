@@ -1,8 +1,6 @@
 from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
-from typing_extensions import Annotated
 
-import config
 from sql_app import crud, models, schemas
 from sql_app.database import SessionLocal, engine
 
@@ -20,10 +18,10 @@ def get_db():
         db.close()
 
 
-@app.get('/info')
-async def info(settings: Annotated[config.Settings, Depends(config.get_settings)]):
+@app.get('/info/')
+async def info():
     return {
-        'database_url': settings.database_url,
+        'status': 'ok',
     }
 
 
