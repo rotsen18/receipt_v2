@@ -17,8 +17,8 @@ router = APIRouter()
 
 
 @router.get('/users/', response_model=list[schemas.UserList])
-def read_users(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
+async def read_users(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
+    users = await crud.get_users(db, skip=skip, limit=limit)
     return users
 
 

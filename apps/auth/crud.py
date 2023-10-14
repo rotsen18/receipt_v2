@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.auth import models
@@ -32,8 +33,10 @@ def get_user_by_email(db: AsyncSession, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-def get_users(db: AsyncSession, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
+async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100):
+    query = select(models.User)
+    user_list = await db.execute(query)
+    return [user[0] for user in user_list.fetchall()]
 
 
 def create_user(db: AsyncSession, user: UserCreate):
