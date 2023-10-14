@@ -2,7 +2,7 @@ import enum
 
 from sqlalchemy import Boolean, Column, Enum, Integer, String
 
-from apps.database.core import Base
+from database import Base
 
 
 class UserTypeEnum(enum.Enum):
