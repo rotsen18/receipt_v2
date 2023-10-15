@@ -17,12 +17,12 @@ router = APIRouter()
 
 
 @router.get('/users/', response_model=list[schemas.UserList])
-async def read_users(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
-    users = await crud.get_users(db, skip=skip, limit=limit)
+async def read_users(skip: int = 0, limit: int = 100, email: str = None, db: AsyncSession = Depends(get_db)):
+    users = await crud.get_users(db, skip=skip, limit=limit, email=email)
     return users
 
 
-@router.post('/users/', response_model=schemas.User)
+@router.post('/users/', response_model=schemas.UserDetail)
 def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
@@ -31,9 +31,18 @@ def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=jsonable_encoder(created_user))
 
 
-@router.get('/users/{user_id}/', response_model=schemas.User)
-def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
+@router.get('/users/{user_id}/', response_model=schemas.UserDetail)
+async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
+    db_user = await crud.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=[{'msg': 'User not found'}])
+    return db_user
+
+
+@router.patch('/users/{user_id}/', response_model=schemas.UserDetail)
+async def update_user(user_id: int, user: schemas.UserUpdate, db: AsyncSession = Depends(get_db)):
+    payload = user.model_dump(exclude_unset=True)
+    db_user = await crud.update_user(db, user_id=user_id, payload=payload)
     if db_user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=[{'msg': 'User not found'}])
     return db_user

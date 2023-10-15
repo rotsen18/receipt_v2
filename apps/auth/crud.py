@@ -6,11 +6,10 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from apps.auth import models
-from apps.auth.schemas import TokenData, User, UserCreate
+from apps.auth import models, schemas
 from apps.core.config import settings
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
@@ -25,26 +24,35 @@ def hash_password(password: str):
     return bcrypt.hashpw(pw, salt)
 
 
-def get_user(db: AsyncSession, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+async def get_user(db: AsyncSession, user_id: int):
+    query = select(models.User).where(models.User.id == user_id)
+    users = await db.execute(query)
+    return users.fetchone()[0]
 
 
 def get_user_by_email(db: AsyncSession, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100):
-    query = select(models.User)
+async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100, email: str = None):
+    query = select(models.User).where(models.User.email.icontains(email)).offset(skip).limit(limit)
     user_list = await db.execute(query)
     return [user[0] for user in user_list.fetchall()]
 
 
-def create_user(db: AsyncSession, user: UserCreate):
+def create_user(db: AsyncSession, user: schemas.UserCreate):
     hashed_password = hash_password(user.password)
     db_user = models.User(email=user.email, password=hashed_password)
     db.add(db_user)
     db.commit()
     return db_user
+
+
+async def update_user(db: AsyncSession, user_id: int, payload: dict):
+    query = update(models.User).where(models.User.id == user_id).values(**payload)
+    await db.execute(query)
+    await db.commit()
+    return await get_user(db, user_id)
 
 
 def verify_password(plain_password, hashed_password):
@@ -86,7 +94,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: As
         email: str = payload.get('sub')
         if email is None:
             raise credentials_exception
-        token_obj = TokenData(email=email)
+        token_obj = schemas.TokenData(email=email)
     except JWTError:
         raise credentials_exception
     user = get_user_by_email(db, email=token_obj.email)
@@ -95,7 +103,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: As
     return user
 
 
-async def get_current_active_user(current_user: Annotated[User, Depends(get_current_user)]):
+async def get_current_active_user(current_user: Annotated[schemas.UserDetail, Depends(get_current_user)]):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail='Inactive user')
     return current_user
