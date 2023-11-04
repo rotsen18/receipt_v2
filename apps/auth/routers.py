@@ -2,8 +2,6 @@ from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,13 +20,13 @@ async def read_users(skip: int = 0, limit: int = 100, email: str = None, db: Asy
     return users
 
 
-@router.post('/users/', response_model=schemas.UserDetail)
-def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
+@router.post('/users/', response_model=schemas.UserDetail, status_code=status.HTTP_201_CREATED)
+async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
+    db_user = await crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=[{'msg': 'Email already registered'}])
-    created_user = crud.create_user(db=db, user=user)
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content=jsonable_encoder(created_user))
+    created_user = await crud.create_user(db=db, user=user)
+    return created_user
 
 
 @router.get('/users/{user_id}/', response_model=schemas.UserDetail)

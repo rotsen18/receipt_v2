@@ -21,7 +21,7 @@ def hash_password(password: str):
     """Generates a hashed version of the provided password."""
     pw = bytes(password, 'utf-8')
     salt = bcrypt.gensalt()
-    return bcrypt.hashpw(pw, salt)
+    return bcrypt.hashpw(pw, salt).decode()
 
 
 async def get_user(db: AsyncSession, user_id: int):
@@ -30,8 +30,10 @@ async def get_user(db: AsyncSession, user_id: int):
     return users.first()
 
 
-def get_user_by_email(db: AsyncSession, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
+async def get_user_by_email(db: AsyncSession, email: str):
+    query = select(models.User).where(models.User.email == email)
+    users = await db.execute(query)
+    return users.first()
 
 
 async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100, email: str = None):
@@ -42,12 +44,13 @@ async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100, email: st
     return [user[0] for user in user_list.fetchall()]
 
 
-def create_user(db: AsyncSession, user: schemas.UserCreate):
+async def create_user(db: AsyncSession, user: schemas.UserCreate):
     hashed_password = hash_password(user.password)
-    db_user = models.User(email=user.email, password=hashed_password)
-    db.add(db_user)
-    db.commit()
-    return db_user
+    user_data = models.User(email=user.email, password=hashed_password, telegram_id=user.telegram_id)
+    db.add(user_data)
+    await db.commit()
+    await db.refresh(user_data)
+    return user_data
 
 
 async def update_user(db: AsyncSession, user_id: int, payload: dict):
