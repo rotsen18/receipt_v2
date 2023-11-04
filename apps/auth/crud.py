@@ -27,7 +27,7 @@ def hash_password(password: str):
 async def get_user(db: AsyncSession, user_id: int):
     query = select(models.User).where(models.User.id == user_id)
     users = await db.execute(query)
-    return users.first()
+    return users.scalar()
 
 
 async def get_user_by_email(db: AsyncSession, email: str):
