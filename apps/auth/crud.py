@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
 def hash_password(password: str):
-    '''Generates a hashed version of the provided password.'''
+    """Generates a hashed version of the provided password."""
     pw = bytes(password, 'utf-8')
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(pw, salt)
@@ -35,7 +35,9 @@ def get_user_by_email(db: AsyncSession, email: str):
 
 
 async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100, email: str = None):
-    query = select(models.User).where(models.User.email.icontains(email)).offset(skip).limit(limit)
+    query = select(models.User).offset(skip).limit(limit)
+    if email:
+        query = query.where(models.User.email.icontains(email))
     user_list = await db.execute(query)
     return [user[0] for user in user_list.fetchall()]
 
