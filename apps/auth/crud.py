@@ -33,7 +33,7 @@ async def get_user(db: AsyncSession, user_id: int):
 async def get_user_by_email(db: AsyncSession, email: str):
     query = select(models.User).where(models.User.email == email)
     users = await db.execute(query)
-    return users.first()
+    return users.scalar()
 
 
 async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100, email: str = None):
@@ -68,8 +68,8 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def authenticate_user(db: AsyncSession, email: str, password: str):
-    user = get_user_by_email(db, email)
+async def authenticate_user(db: AsyncSession, email: str, password: str):
+    user = await get_user_by_email(db, email)
     if not user:
         return False
     if not verify_password(password, user.password):
