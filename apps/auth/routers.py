@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.auth import crud, schemas
-from apps.auth.crud import authenticate_user, create_access_token
+from apps.auth.crud import authenticate_user, create_access_token, get_current_active_user
 from apps.auth.schemas import Token
 from apps.core.config import settings
 from dependencies import get_db
@@ -15,13 +15,23 @@ router = APIRouter()
 
 
 @router.get('/users/', response_model=list[schemas.UserList])
-async def read_users(skip: int = 0, limit: int = 100, email: str = None, db: AsyncSession = Depends(get_db)):
+async def read_users(
+    current_user: Annotated[schemas.UserDetail, Depends(get_current_active_user)],
+    skip: int = 0,
+    limit: int = 100,
+    email: str = None,
+    db: AsyncSession = Depends(get_db)
+):
     users = await crud.get_users(db, skip=skip, limit=limit, email=email)
     return users
 
 
 @router.post('/users/', response_model=schemas.UserDetail, status_code=status.HTTP_201_CREATED)
-async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
+async def create_user(
+    current_user: Annotated[schemas.UserDetail, Depends(get_current_active_user)],
+    user: schemas.UserCreate,
+    db: AsyncSession = Depends(get_db)
+):
     db_user = await crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=[{'msg': 'Email already registered'}])
@@ -30,7 +40,11 @@ async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_d
 
 
 @router.get('/users/{user_id}/', response_model=schemas.UserDetail)
-async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
+async def read_user(
+    current_user: Annotated[schemas.UserDetail, Depends(get_current_active_user)],
+    user_id: int,
+    db: AsyncSession = Depends(get_db)
+):
     db_user = await crud.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=[{'msg': 'User not found'}])
@@ -38,7 +52,12 @@ async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.patch('/users/{user_id}/', response_model=schemas.UserDetail)
-async def update_user(user_id: int, user: schemas.UserUpdate, db: AsyncSession = Depends(get_db)):
+async def update_user(
+    current_user: Annotated[schemas.UserDetail, Depends(get_current_active_user)],
+    user_id: int,
+    user: schemas.UserUpdate,
+    db: AsyncSession = Depends(get_db)
+):
     payload = user.model_dump(exclude_unset=True)
     db_user = await crud.update_user(db, user_id=user_id, payload=payload)
     if db_user is None:
@@ -63,8 +82,6 @@ async def login_for_access_token(
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-# @router.get('/users/me/', response_model=User)
-# async def read_users_me(
-#     current_user: Annotated[User, Depends(get_current_active_user)],
-# ):
-#     return current_user
+@router.get('/me/', response_model=schemas.UserDetail)
+async def read_users_me(current_user: Annotated[schemas.UserDetail, Depends(get_current_active_user)]):
+    return current_user
