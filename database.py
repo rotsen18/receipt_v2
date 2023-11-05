@@ -4,10 +4,8 @@ from sqlalchemy.orm import sessionmaker
 
 from apps.core.config import settings
 
-engine = create_async_engine('postgresql+asyncpg://postgres:3334@localhost:5432/receipt', echo=settings.DEBUG)
+engine = create_async_engine(str(settings.SQLALCHEMY_DATABASE_URI), echo=settings.DEBUG)
 
-SessionLocal = sessionmaker(
-    autocommit=False, autoflush=False, bind=engine, class_=AsyncSession
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 
 Base = declarative_base()

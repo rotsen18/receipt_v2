@@ -1,16 +1,10 @@
 from fastapi import FastAPI
 
-from api import api_router
-
-# from apps.auth import models
-# from apps.database.core import engine
-
-
-# models.Base.metadata.create_all(bind=engine)
-
+from apps.api.api_v1.api import api_router
+from apps.core.config import settings
 
 app = FastAPI()
-app.include_router(api_router)
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")
