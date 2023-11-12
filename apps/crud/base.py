@@ -33,8 +33,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self, db: AsyncSession, *, skip: int = 0, limit: int = 100
     ) -> List[ModelType]:
         query = select(self.model).offset(skip).limit(limit)
-        user_list = await db.execute(query)
-        return [user[0] for user in user_list.fetchall()]
+        item_list = await db.execute(query)
+        return [item[0] for item in item_list.fetchall()]
 
     async def create(self, db: AsyncSession, *, obj_in: CreateSchemaType) -> ModelType:
         obj_in_data = jsonable_encoder(obj_in)

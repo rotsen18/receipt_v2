@@ -29,7 +29,10 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-from apps.models import Item, User  # noqa
+
+from apps.models import (  # noqa
+    CookingType, Ingredient, MeasureUnit, Receipt, ReceiptComponent, ReceiptComponentType, User,
+)
 
 target_metadata = Base.metadata
 

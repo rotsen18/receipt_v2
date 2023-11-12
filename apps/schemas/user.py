@@ -36,4 +36,4 @@ class UserDetail(UserList):
     name: str
     first_name: str
     last_name: str
-    is_active: str
+    is_active: bool
