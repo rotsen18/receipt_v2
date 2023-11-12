@@ -1,31 +1,14 @@
-from fastapi import Depends, FastAPI
-from sqlalchemy.orm import Session
+from fastapi import FastAPI
 
-from sql_app import crud, models, schemas
-from sql_app.database import SessionLocal, engine
+from apps.api.api_v1.api import api_router
+from apps.core.config import settings
 
-models.Base.metadata.create_all(bind=engine)
-
-app = FastAPI()
+app = FastAPI(debug=settings.DEBUG, title=settings.PROJECT_NAME)
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-@app.get('/info/')
-async def info():
+@app.get('/')
+async def health_check():
     return {
-        'status': 'ok',
+        'name': settings.PROJECT_NAME,
     }
-
-
-@app.get('/users/', response_model=list[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
-    return users

@@ -1,8 +1,9 @@
 import enum
 
 from sqlalchemy import Boolean, Column, Enum, Integer, String
+from sqlalchemy.orm import relationship
 
-from sql_app.database import Base
+from apps.models import mixins
 
 
 class UserTypeEnum(enum.Enum):
@@ -11,10 +12,9 @@ class UserTypeEnum(enum.Enum):
     MODERATOR = 3
 
 
-class User(Base):
+class User(mixins.IDPrimaryKeyABC):
     __tablename__ = 'user'
 
-    id = Column(Integer, primary_key=True, index=True)
     telegram_id = Column(Integer, nullable=True, default=None, index=True)
     email = Column(String, unique=True, index=True)
     password = Column(String)
@@ -25,3 +25,5 @@ class User(Base):
     last_name = Column(String(35), nullable=True, default='')
     full_name = Column(String(35), nullable=True, default='')
     name = Column(String(35), nullable=True, default='')
+
+    receipts = relationship('Receipt', back_populates='author')
