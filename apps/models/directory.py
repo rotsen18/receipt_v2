@@ -9,7 +9,6 @@ class Ingredient(mixins.IDPrimaryKeyABC, mixins.NameABC):
 
     description = Column(String, default='', index=True)
     product_url = Column(String, default='')
-    product_link = Column(String, nullable=True)
     product_data = Column(JSON, nullable=True, default=dict)
 
     components = relationship('ReceiptComponent', back_populates='ingredient')

@@ -22,7 +22,10 @@ class CRUDReceipt(CRUDBase[Receipt, ReceiptCreate, ReceiptUpdate]):
         return db_obj
 
     async def get(self, db: AsyncSession, id: int) -> Optional[ReceiptDetail]:
-        query = select(Receipt).options(selectinload(Receipt.components)).where(Receipt.id == id)
+        query = select(Receipt).options(
+            selectinload(Receipt.components).joinedload(ReceiptComponent.unit),
+            selectinload(Receipt.components).joinedload(ReceiptComponent.ingredient),
+        ).where(Receipt.id == id)
         users = await db.execute(query)
         return users.scalar()
 

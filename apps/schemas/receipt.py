@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from apps.schemas.directory import IngredientNested, MeasureUnitNested
+
 
 class ReceiptComponentBase(BaseModel):
     amount: float
@@ -30,6 +32,14 @@ class ReceiptComponentList(ReceiptComponentBase):
         from_attributes = True
 
 
+class ReceiptComponentNested(ReceiptComponentBase):
+    ingredient: IngredientNested
+    unit: MeasureUnitNested
+
+    class Config:
+        from_attributes = True
+
+
 class ReceiptBase(BaseModel):
     name: str
     description: Optional[str] = None
@@ -53,7 +63,7 @@ class ReceiptDetail(ReceiptBase):
     description: Optional[str] = None
     procedure: str
     source_link: Optional[str] = None
-    components: list[ReceiptComponentList] = []
+    components: list[ReceiptComponentNested] = []
     author_id: int
 
     class Config:
