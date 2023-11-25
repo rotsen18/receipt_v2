@@ -110,7 +110,52 @@ async def update_measure_unit(
             status_code=404,
             detail='The measure unit with this id does not exist in the system',
         )
-    updated_measure_unit = await crud.measure_unit.update(
-        db, db_obj=measure_unit, obj_in=measure_unit_in
-    )
+    updated_measure_unit = await crud.measure_unit.update(db, db_obj=measure_unit, obj_in=measure_unit_in)
     return updated_measure_unit
+
+
+@router.get('/cooking_types/', response_model=List[schemas.CookingTypeList])
+async def read_cooking_types(
+    db: AsyncSession = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    cooking_types = await crud.cooking_type.get_multi(db, skip=skip, limit=limit)
+    return cooking_types
+
+
+@router.post('/cooking_types/', response_model=schemas.CookingTypeDetail)
+async def create_cooking_type(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    cooking_type_in: schemas.CookingTypeCreate,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    name = cooking_type_in.name
+    cooking_type = await crud.cooking_type.get_by_name(db, name=name)
+    if cooking_type:
+        raise HTTPException(
+            status_code=400,
+            detail=f'Cooking type with "{name}" name already exists in the system.',
+        )
+    cooking_type = await crud.cooking_type.create(db, obj_in=cooking_type_in)
+    return cooking_type
+
+
+@router.patch('/cooking_types/{cooking_type_id}/', response_model=schemas.CookingTypeDetail)
+async def update_cooking_type(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    cooking_type_id: int,
+    cooking_type_in: schemas.CookingTypeUpdate,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    cooking_type = await crud.cooking_type.get(db, id=cooking_type_id)
+    if not cooking_type:
+        raise HTTPException(
+            status_code=404,
+            detail='The cooking type with this id does not exist in the system',
+        )
+    updated_cooking_type = await crud.cooking_type.update(db, db_obj=cooking_type, obj_in=cooking_type_in)
+    return updated_cooking_type

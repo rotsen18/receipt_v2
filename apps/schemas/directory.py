@@ -59,3 +59,23 @@ class MeasureUnitList(MeasureUnitBase):
 
 class MeasureUnitDetail(MeasureUnitBase):
     id: int
+
+
+class CookingTypeBase(BaseModel):
+    name: str
+
+
+class CookingTypeCreate(CookingTypeBase):
+    pass
+
+
+class CookingTypeUpdate(CookingTypeBase):
+    pass
+
+
+class CookingTypeList(CookingTypeBase):
+    id: int
+
+
+class CookingTypeDetail(CookingTypeBase):
+    id: int

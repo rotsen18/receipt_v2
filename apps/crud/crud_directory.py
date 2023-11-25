@@ -19,5 +19,13 @@ class MeasureUnit(CRUDBase[models.MeasureUnit, IngredientCreate, IngredientUpdat
         return result.scalar()
 
 
+class CookingType(CRUDBase[models.CookingType, IngredientCreate, IngredientUpdate]):
+    async def get_by_name(self, db, *, name: str) -> models.CookingType:
+        query = select(self.model).where(self.model.name == name)
+        result = await db.execute(query)
+        return result.scalar()
+
+
 ingredient = CRUDIngredient(models.Ingredient)
 measure_unit = MeasureUnit(models.MeasureUnit)
+cooking_type = CookingType(models.CookingType)
