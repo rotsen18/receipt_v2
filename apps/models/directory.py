@@ -28,3 +28,5 @@ class MeasureUnit(mixins.IDPrimaryKeyABC, mixins.NameABC):
 
 class CookingType(mixins.IDPrimaryKeyABC, mixins.NameABC):
     __tablename__ = 'cooking_type'
+
+    receipts = relationship('Receipt', back_populates='cooking_type')

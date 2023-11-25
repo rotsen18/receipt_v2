@@ -15,6 +15,8 @@ class Receipt(mixins.IDPrimaryKeyABC, mixins.DateTimeABC):
 
     author_id = Column(Integer, ForeignKey('user.id'))
     author = relationship('User', back_populates='receipts')
+    cooking_type_id = Column(Integer, ForeignKey('cooking_type.id'))
+    cooking_type = relationship('CookingType', back_populates='receipts')
     components = relationship('ReceiptComponent', back_populates='receipt')
 
 

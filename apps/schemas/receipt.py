@@ -65,6 +65,7 @@ class ReceiptDetail(ReceiptBase):
     source_link: Optional[str] = None
     components: list[ReceiptComponentNested] = []
     author_id: int
+    cooking_type_id: Optional[int]
 
     class Config:
         from_attributes = True
