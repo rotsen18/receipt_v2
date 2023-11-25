@@ -29,6 +29,12 @@ class IngredientList(IngredientBase):
     product_data: Optional[dict] = None
 
 
+class IngredientDetail(IngredientBase):
+    id: int
+    product_url: Optional[str] = None
+    product_data: Optional[dict] = None
+
+
 class MeasureUnitBase(BaseModel):
     name: str
     symbol: str
