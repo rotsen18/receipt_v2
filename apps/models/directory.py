@@ -21,7 +21,7 @@ class ReceiptComponentType(mixins.IDPrimaryKeyABC, mixins.NameABC):
 class MeasureUnit(mixins.IDPrimaryKeyABC, mixins.NameABC):
     __tablename__ = 'measure_unit'
 
-    symbol = Column(String, default='', index=True)
+    symbol = Column(String, unique=True, index=True)
 
     components = relationship('ReceiptComponent', back_populates='unit')
 

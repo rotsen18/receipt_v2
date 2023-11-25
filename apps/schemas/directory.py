@@ -51,3 +51,11 @@ class MeasureUnitUpdate(MeasureUnitBase):
 
 class MeasureUnitNested(MeasureUnitBase):
     pass
+
+
+class MeasureUnitList(MeasureUnitBase):
+    id: int
+
+
+class MeasureUnitDetail(MeasureUnitBase):
+    id: int

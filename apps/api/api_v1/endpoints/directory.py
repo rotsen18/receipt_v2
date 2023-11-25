@@ -28,11 +28,12 @@ async def create_ingredient(
     ingredient_in: schemas.IngredientCreate,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
-    ingredient = await crud.ingredient.get_by_name(db, name=ingredient_in.name)
+    name = ingredient_in.name
+    ingredient = await crud.ingredient.get_by_name(db, name=name)
     if ingredient:
         raise HTTPException(
             status_code=400,
-            detail='ingredient with this name already exists in the system.',
+            detail=f'Ingredient with "{name}" name already exists in the system.',
         )
     ingredient = await crud.ingredient.create(db, obj_in=ingredient_in)
     return ingredient
@@ -64,3 +65,52 @@ async def update_ingredient(
         )
     updated_ingredient = await crud.ingredient.update(db, db_obj=ingredient, obj_in=ingredient_in)
     return updated_ingredient
+
+
+@router.get('/measure_units/', response_model=List[schemas.MeasureUnitList])
+async def read_measure_units(
+    db: AsyncSession = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    measure_units = await crud.measure_unit.get_multi(db, skip=skip, limit=limit)
+    return measure_units
+
+
+@router.post('/measure_units/', response_model=schemas.MeasureUnitCreate)
+async def create_measure_unit(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    measure_unit_in: schemas.MeasureUnitCreate,
+    current_user: models.User = Depends(deps.get_current_active_superuser),
+) -> Any:
+    symbol = measure_unit_in.symbol
+    measure_unit = await crud.measure_unit.get_by_symbol(db, symbol=symbol)
+    if measure_unit:
+        raise HTTPException(
+            status_code=400,
+            detail=f'Measure unit with "{symbol}" symbol already exists in the system.',
+        )
+    measure_unit = await crud.measure_unit.create(db, obj_in=measure_unit_in)
+    return measure_unit
+
+
+@router.patch('/measure_units/{measure_unit_id}/', response_model=schemas.MeasureUnitDetail)
+async def update_measure_unit(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    measure_unit_id: int,
+    measure_unit_in: schemas.MeasureUnitUpdate,
+    # current_user: models.User = Depends(deps.get_current_active_superuser),
+) -> Any:
+    measure_unit = await crud.measure_unit.get(db, id=measure_unit_id)
+    if not measure_unit:
+        raise HTTPException(
+            status_code=404,
+            detail='The measure unit with this id does not exist in the system',
+        )
+    updated_measure_unit = await crud.measure_unit.update(
+        db, db_obj=measure_unit, obj_in=measure_unit_in
+    )
+    return updated_measure_unit
