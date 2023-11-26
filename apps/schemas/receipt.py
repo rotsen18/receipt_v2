@@ -32,7 +32,8 @@ class ReceiptComponentList(ReceiptComponentBase):
         from_attributes = True
 
 
-class ReceiptComponentNested(ReceiptComponentBase):
+class ReceiptComponentNested(BaseModel):
+    amount: float
     ingredient: IngredientNested
     unit: MeasureUnitNested
 
@@ -66,7 +67,7 @@ class ReceiptDetail(ReceiptBase):
     components: list[ReceiptComponentNested] = []
     author_id: int
     cooking_type_id: Optional[int]
-    # category_id: Optional[int]
+    category_id: Optional[int]
 
     class Config:
         from_attributes = True
