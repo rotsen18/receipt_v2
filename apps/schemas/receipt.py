@@ -12,7 +12,6 @@ class ReceiptComponentBase(BaseModel):
 
 class ReceiptComponentCreate(ReceiptComponentBase):
     ingredient_id: int
-    receipt_id: int
 
 
 class ReceiptComponentUpdate(ReceiptComponentBase):
@@ -56,6 +55,8 @@ class ReceiptUpdate(ReceiptBase):
     description: Optional[str] = None
     procedure: Optional[str] = None
     source_link: Optional[str] = None
+    cooking_type_id: Optional[int]
+    category_id: Optional[int]
 
 
 class ReceiptDetail(ReceiptBase):

@@ -43,6 +43,20 @@ class CRUDReceiptComponent(CRUDBase[ReceiptComponent, ReceiptComponentCreate, Re
         receipt_component_list = await db.execute(query)
         return [component[0] for component in receipt_component_list.fetchall()]
 
+    async def create_with_receipt(
+        self,
+        db: AsyncSession,
+        *,
+        obj_in: ReceiptComponentCreate,
+        receipt_id: int,
+    ) -> ReceiptComponent:
+        obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.model(**obj_in_data, receipt_id=receipt_id)
+        db.add(db_obj)
+        await db.commit()
+        await db.refresh(db_obj)
+        return db_obj
+
 
 receipt = CRUDReceipt(Receipt)
 receipt_component = CRUDReceiptComponent(ReceiptComponent)
