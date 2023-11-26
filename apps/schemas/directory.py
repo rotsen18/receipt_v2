@@ -79,3 +79,19 @@ class CookingTypeList(CookingTypeBase):
 
 class CookingTypeDetail(CookingTypeBase):
     id: int
+
+
+class CulinaryCategoryBase(BaseModel):
+    name: str
+
+
+class CulinaryCategoryCreate(CulinaryCategoryBase):
+    pass
+
+
+class CulinaryCategoryUpdate(CulinaryCategoryBase):
+    pass
+
+
+class CulinaryCategoryList(CulinaryCategoryBase):
+    id: int

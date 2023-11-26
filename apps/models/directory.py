@@ -30,3 +30,9 @@ class CookingType(mixins.IDPrimaryKeyABC, mixins.NameABC):
     __tablename__ = 'cooking_type'
 
     receipts = relationship('Receipt', back_populates='cooking_type')
+
+
+class CulinaryCategory(mixins.IDPrimaryKeyABC, mixins.NameABC):
+    __tablename__ = 'culinary_category'
+
+    receipts = relationship('Receipt', back_populates='culinary_category')

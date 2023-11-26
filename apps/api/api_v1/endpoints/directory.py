@@ -159,3 +159,54 @@ async def update_cooking_type(
         )
     updated_cooking_type = await crud.cooking_type.update(db, db_obj=cooking_type, obj_in=cooking_type_in)
     return updated_cooking_type
+
+
+@router.get('/culinary_categories/', response_model=List[schemas.CulinaryCategoryList])
+async def read_culinary_categories(
+    db: AsyncSession = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    culinary_categories = await crud.culinary_category.get_multi(db, skip=skip, limit=limit)
+    return culinary_categories
+
+
+@router.post('/culinary_categories/', response_model=schemas.CulinaryCategoryList)
+async def create_culinary_category(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    culinary_category_in: schemas.CulinaryCategoryCreate,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    name = culinary_category_in.name
+    culinary_category = await crud.culinary_category.get_by_name(db, name=name)
+    if culinary_category:
+        raise HTTPException(
+            status_code=400,
+            detail=f'Culinary category with "{name}" name already exists in the system.',
+        )
+    culinary_category = await crud.culinary_category.create(db, obj_in=culinary_category_in)
+    return culinary_category
+
+
+@router.patch('/culinary_categories/{culinary_category_id}/', response_model=schemas.CulinaryCategoryList)
+async def update_culinary_category(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    culinary_category_id: int,
+    culinary_category_in: schemas.CulinaryCategoryUpdate,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    culinary_category = await crud.culinary_category.get(db, id=culinary_category_id)
+    if not culinary_category:
+        raise HTTPException(
+            status_code=404,
+            detail='The culinary category with this id does not exist in the system',
+        )
+    updated_culinary_category = await crud.culinary_category.update(
+        db,
+        db_obj=culinary_category,
+        obj_in=culinary_category_in,
+    )
+    return updated_culinary_category

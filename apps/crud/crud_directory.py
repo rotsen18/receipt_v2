@@ -26,6 +26,14 @@ class CookingType(CRUDBase[models.CookingType, IngredientCreate, IngredientUpdat
         return result.scalar()
 
 
+class CulinaryCategory(CRUDBase[models.CulinaryCategory, IngredientCreate, IngredientUpdate]):
+    async def get_by_name(self, db, *, name: str) -> models.CulinaryCategory:
+        query = select(self.model).where(self.model.name == name)
+        result = await db.execute(query)
+        return result.scalar()
+
+
 ingredient = CRUDIngredient(models.Ingredient)
 measure_unit = MeasureUnit(models.MeasureUnit)
 cooking_type = CookingType(models.CookingType)
+culinary_category = CulinaryCategory(models.CulinaryCategory)
