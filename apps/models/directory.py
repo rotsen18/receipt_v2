@@ -17,6 +17,8 @@ class Ingredient(mixins.IDPrimaryKeyABC, mixins.NameABC):
 class ReceiptComponentType(mixins.IDPrimaryKeyABC, mixins.NameABC):
     __tablename__ = 'receipt_component_type'
 
+    components = relationship('ReceiptComponent', back_populates='component_type')
+
 
 class MeasureUnit(mixins.IDPrimaryKeyABC, mixins.NameABC):
     __tablename__ = 'measure_unit'
@@ -35,4 +37,4 @@ class CookingType(mixins.IDPrimaryKeyABC, mixins.NameABC):
 class CulinaryCategory(mixins.IDPrimaryKeyABC, mixins.NameABC):
     __tablename__ = 'culinary_category'
 
-    receipts = relationship('Receipt', back_populates='culinary_category')
+    receipts = relationship('Receipt', back_populates='category')

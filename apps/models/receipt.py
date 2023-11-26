@@ -33,3 +33,5 @@ class ReceiptComponent(mixins.IDPrimaryKeyABC, mixins.DateTimeABC):
     receipt = relationship('Receipt', back_populates='components')
     ingredient_id = Column(Integer, ForeignKey('ingredient.id'))
     ingredient = relationship('Ingredient', back_populates='components')
+    component_type_id = Column(Integer, ForeignKey('receipt_component_type.id'))
+    component_type = relationship('ReceiptComponentType', back_populates='components')
