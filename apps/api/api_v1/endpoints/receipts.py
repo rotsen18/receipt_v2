@@ -30,7 +30,7 @@ async def create_receipt(
     return item
 
 
-@router.get('/{receipt_id}', response_model=schemas.ReceiptDetail)
+@router.get('/{receipt_id}/', response_model=schemas.ReceiptDetail)
 async def read_item(
     *,
     db: Session = Depends(deps.get_db),
@@ -43,7 +43,7 @@ async def read_item(
     return receipt
 
 
-@router.patch('/{receipt_id}', response_model=schemas.ReceiptDetail)
+@router.patch('/{receipt_id}/', response_model=schemas.ReceiptDetail)
 async def update_receipt(
     *,
     db: Session = Depends(deps.get_db),
@@ -58,7 +58,7 @@ async def update_receipt(
     return receipt
 
 
-@router.post('/{receipt_id}/components', response_model=schemas.ReceiptComponentDetail)
+@router.post('/{receipt_id}/components/', response_model=schemas.ReceiptComponentDetail)
 async def create_receipt_component(
     *,
     db: Session = Depends(deps.get_db),
@@ -73,7 +73,7 @@ async def create_receipt_component(
     return component
 
 
-@router.patch('/components/{component_id}', response_model=schemas.ReceiptComponentDetail)
+@router.patch('/components/{component_id}/', response_model=schemas.ReceiptComponentDetail)
 async def update_receipt_component(
     *,
     db: Session = Depends(deps.get_db),
@@ -88,7 +88,7 @@ async def update_receipt_component(
     return component
 
 
-@router.delete('/components/{component_id}')
+@router.delete('/components/{component_id}/')
 async def delete_receipt_component(
     *,
     db: Session = Depends(deps.get_db),
