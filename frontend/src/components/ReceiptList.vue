@@ -45,6 +45,16 @@ ul {
   padding: 10px;
   margin-bottom: 10px;
   cursor: pointer;
+  text-align: start;
+}
+
+.receipt-item h3 {
+  text-align: center; /* Center the receipt name */
+  margin-bottom: 8px; /* Optional: add some spacing between name and description */
+}
+
+.receipt-item p {
+  margin: 0; /* Remove default margin for paragraphs */
 }
 
 .receipt-item:hover {
