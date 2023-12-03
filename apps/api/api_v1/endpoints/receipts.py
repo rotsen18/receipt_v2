@@ -14,7 +14,7 @@ async def read_receipts(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    # current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     return await crud.receipt.get_multi(db, skip=skip, limit=limit)
 
@@ -35,7 +35,7 @@ async def read_item(
     *,
     db: Session = Depends(deps.get_db),
     receipt_id: int,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    # current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     receipt = await crud.receipt.get(db=db, id=receipt_id)
     if not receipt:
