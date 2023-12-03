@@ -9,7 +9,6 @@ class Ingredient(mixins.IDPrimaryKeyABC, mixins.NameABC):
 
     description = Column(String, default='', index=True)
     product_url = Column(String, default='')
-    product_link = Column(String, nullable=True)
     product_data = Column(JSON, nullable=True, default=dict)
 
     components = relationship('ReceiptComponent', back_populates='ingredient')
@@ -18,14 +17,24 @@ class Ingredient(mixins.IDPrimaryKeyABC, mixins.NameABC):
 class ReceiptComponentType(mixins.IDPrimaryKeyABC, mixins.NameABC):
     __tablename__ = 'receipt_component_type'
 
+    components = relationship('ReceiptComponent', back_populates='component_type')
+
 
 class MeasureUnit(mixins.IDPrimaryKeyABC, mixins.NameABC):
     __tablename__ = 'measure_unit'
 
-    symbol = Column(String, default='', index=True)
+    symbol = Column(String, unique=True, index=True)
 
     components = relationship('ReceiptComponent', back_populates='unit')
 
 
 class CookingType(mixins.IDPrimaryKeyABC, mixins.NameABC):
     __tablename__ = 'cooking_type'
+
+    receipts = relationship('Receipt', back_populates='cooking_type')
+
+
+class CulinaryCategory(mixins.IDPrimaryKeyABC, mixins.NameABC):
+    __tablename__ = 'culinary_category'
+
+    receipts = relationship('Receipt', back_populates='category')

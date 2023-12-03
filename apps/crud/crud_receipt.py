@@ -22,7 +22,10 @@ class CRUDReceipt(CRUDBase[Receipt, ReceiptCreate, ReceiptUpdate]):
         return db_obj
 
     async def get(self, db: AsyncSession, id: int) -> Optional[ReceiptDetail]:
-        query = select(Receipt).options(selectinload(Receipt.components)).where(Receipt.id == id)
+        query = select(Receipt).options(
+            selectinload(Receipt.components).joinedload(ReceiptComponent.unit),
+            selectinload(Receipt.components).joinedload(ReceiptComponent.ingredient),
+        ).where(Receipt.id == id)
         users = await db.execute(query)
         return users.scalar()
 
@@ -39,6 +42,20 @@ class CRUDReceiptComponent(CRUDBase[ReceiptComponent, ReceiptComponentCreate, Re
         query = select(ReceiptComponent).where(ReceiptComponent.receipt_id == receipt_id)
         receipt_component_list = await db.execute(query)
         return [component[0] for component in receipt_component_list.fetchall()]
+
+    async def create_with_receipt(
+        self,
+        db: AsyncSession,
+        *,
+        obj_in: ReceiptComponentCreate,
+        receipt_id: int,
+    ) -> ReceiptComponent:
+        obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.model(**obj_in_data, receipt_id=receipt_id)
+        db.add(db_obj)
+        await db.commit()
+        await db.refresh(db_obj)
+        return db_obj
 
 
 receipt = CRUDReceipt(Receipt)
