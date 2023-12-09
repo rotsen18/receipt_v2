@@ -125,6 +125,21 @@ async def read_cooking_types(
     return cooking_types
 
 
+@router.get('/cooking_types/{cooking_type_id}/', response_model=schemas.CookingTypeDetail)
+async def read_cooking_type(
+    cooking_type_id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    # current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    cooking_types = await crud.cooking_type.get(db, id=cooking_type_id)
+    if not cooking_types:
+        raise HTTPException(
+            status_code=404,
+            detail=f'Cooking type with with this id={cooking_type_id} does not exist.',
+        )
+    return cooking_types
+
+
 @router.post('/cooking_types/', response_model=schemas.CookingTypeDetail)
 async def create_cooking_type(
     *,
@@ -170,6 +185,21 @@ async def read_culinary_categories(
 ) -> Any:
     culinary_categories = await crud.culinary_category.get_multi(db, skip=skip, limit=limit)
     return culinary_categories
+
+
+@router.get('/culinary_categories/{culinary_category_id}/', response_model=schemas.CulinaryCategoryList)
+async def read_culinary_category(
+    culinary_category_id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    # current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    culinary_category = await crud.culinary_category.get(db, id=culinary_category_id)
+    if not culinary_category:
+        raise HTTPException(
+            status_code=404,
+            detail=f'Ingredient with with this id={culinary_category_id} does not exist.',
+        )
+    return culinary_category
 
 
 @router.post('/culinary_categories/', response_model=schemas.CulinaryCategoryList)
