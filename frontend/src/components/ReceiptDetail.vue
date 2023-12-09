@@ -1,5 +1,10 @@
 <template>
   <div>
+    <router-link :to="{ name: 'receipt-list'}">
+      <div>
+        <h3>All receipts</h3>
+      </div>
+    </router-link>
     <div v-if="receipt">
       <h2 class="receipt-title">{{ receipt.name }}</h2>
       <h3 v-if="receipt.category">Категорія: {{ receipt.category.name }}</h3>
@@ -30,18 +35,29 @@ export default {
   },
   mounted() {
     const receiptId = this.$route.params.id;
-    this.fetchReceiptDetails(receiptId);
+    if (receiptId) {
+      this.fetchReceiptDetails(receiptId);
+    } else {
+      console.error("Receipt ID is undefined or null.");
+    }
   },
   methods: {
     fetchReceiptDetails(receiptId) {
-      this.fetchApiData(`http://localhost:8000/api/v1/receipts/${receiptId}/`)
+      const backendUrl = process.env.VUE_APP_BACKEND_SERVER_URL;
+      const apiUrl = `${backendUrl}/api/v1/receipts/${receiptId}/`;
+
+      this.fetchApiData(apiUrl)
         .then((receiptData) => {
           this.receipt = receiptData;
-          this.fetchApiData(`http://127.0.0.1:8000/api/v1/directory/culinary_categories/${receiptData.category_id}/`)
+
+          const categoryUrl = `${backendUrl}/api/v1/directory/culinary_categories/${receiptData.category_id}/`;
+          this.fetchApiData(categoryUrl)
             .then((categoryData) => {
               this.receipt.category = categoryData;
             });
-          this.fetchApiData(`http://127.0.0.1:8000/api/v1/directory/cooking_types/${receiptData.cooking_type_id}/`)
+
+          const cookingTypeUrl = `${backendUrl}/api/v1/directory/cooking_types/${receiptData.cooking_type_id}/`;
+          this.fetchApiData(cookingTypeUrl)
             .then((cookingTypeData) => {
               this.receipt.cooking_type = cookingTypeData;
             });
@@ -53,6 +69,7 @@ export default {
     },
   },
 };
+
 </script>
 
 <style scoped>
