@@ -14,20 +14,15 @@ RUN npm install
 COPY ./frontend .
 
 # Expose port 8080 to the outside world
-EXPOSE 8080
+EXPOSE 8000
 
 # Build the Vue.js app
 RUN npm run build
 
 # Serve the app with Nginx
 FROM nginx:stable
-COPY --from=0 /app/dist /usr/share/nginx/html
-
-# Copy the Nginx configuration file
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-
-# Expose port 80 to the outside world
-
-
-# Command to run Nginx
-CMD ["nginx", "-g", "daemon off;"]
+WORKDIR /usr/apps/easypon/front
+COPY frontend/ .
+RUN rm -f  /etc/nginx/conf.d/default.conf
+COPY docker/nginx.conf /etc/nginx/conf.d/receipt.conf
+RUN  sed -i "s/127.0.0.1:5000/backend_main:5000/g" /etc/nginx/conf.d/receipt.conf
