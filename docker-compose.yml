@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile_back
 #    container_name: backend-container
+    ports:
+      - "6001:6000"
     env_file: .env
     networks:
       - receipt-network
