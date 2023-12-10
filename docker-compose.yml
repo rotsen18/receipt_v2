@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # FastAPI backend
+  backend_main:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_back
+    container_name: backend-container
+    env_file: docker/.env
+    networks:
+      - receipt-network
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+        context: .
+        dockerfile: docker/Dockerfile_front
+    container_name: front-container
+    restart: unless-stopped
+    env_file: docker/.env
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend_main
+    networks:
+      - receipt-network
+
+
+networks:
+  receipt-network:
+    driver: bridge
