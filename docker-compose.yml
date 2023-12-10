@@ -5,8 +5,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile_back
-    container_name: backend-container
-    env_file: docker/.env
+#    container_name: backend-container
+    env_file: .env
     networks:
       - receipt-network
 
@@ -15,7 +15,6 @@ services:
         context: .
         dockerfile: docker/Dockerfile_front
     restart: unless-stopped
-    env_file: docker/.env
     ports:
       - "8000:80"
     depends_on:

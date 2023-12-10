@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     # e.g: '['http://localhost', 'http://localhost:4200', 'http://localhost:3000', \
     # 'http://localhost:8080', 'http://local.dockertoolbox.tiangolo.com']'
 
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    BACKEND_CORS_ORIGINS: List[AnyHttpUrl | str] = []
     PROJECT_NAME: str
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
