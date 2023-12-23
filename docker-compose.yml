@@ -11,6 +11,8 @@ services:
     env_file: .env
     networks:
       - receipt-network
+    volumes:
+        - log-volume:/var/log/
 
   frontend:
     build:
@@ -23,6 +25,11 @@ services:
       - backend_main
     networks:
       - receipt-network
+    volumes:
+      - log-volume:/var/log/
 
 networks:
   receipt-network:
+
+volumes:
+  log-volume:
