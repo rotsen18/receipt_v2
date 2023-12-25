@@ -3,7 +3,8 @@ WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm install
 COPY frontend/ .
-ENV VUE_APP_BACKEND_SERVER_URL=http://localhost
+#ENV VUE_APP_BACKEND_SERVER_URL='http://localhost:8000'
+ENV VUE_APP_BACKEND_SERVER_URL=''
 RUN npm run build
 
 FROM nginx as production-stage
