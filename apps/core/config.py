@@ -29,6 +29,7 @@ class Settings(BaseSettings):
 
     USERS_OPEN_REGISTRATION: bool = False
     ALGORITHM: str = 'HS256'
+    SWAGGER_URL: str = '/api/docs'
 
     model_config = SettingsConfigDict(env_file='.env')
 
