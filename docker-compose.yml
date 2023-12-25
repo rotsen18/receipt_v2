@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend_main:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_back
+    env_file: .env
+    networks:
+      - receipt-network
+    volumes:
+        - log-volume:/var/log/
+
+  frontend:
+    build:
+        context: .
+        dockerfile: docker/Dockerfile_front
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend_main
+    networks:
+      - receipt-network
+    volumes:
+      - log-volume:/var/log/
+
+networks:
+  receipt-network:
+
+volumes:
+  log-volume:

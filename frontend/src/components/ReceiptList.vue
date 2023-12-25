@@ -22,8 +22,8 @@ export default {
     };
   },
   mounted() {
-    // Fetch data from your API endpoint
-    fetch("http://localhost:8000/api/v1/receipts/")
+    const backendUrl = process.env.VUE_APP_BACKEND_SERVER_URL;
+    fetch(`${backendUrl}/api/v1/receipts/`)
       .then((response) => response.json())
       .then((data) => {
         this.receipts = data;
